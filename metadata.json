@@ -1,0 +1,9 @@
+{
+  "requestFramePermissions": [
+    "microphone",
+    "camera",
+    "display-capture"
+  ],
+  "name": "Consulente SCV",
+  "description": "Un consulente AI esperto in conformità legale e finanziaria Vaticana"
+}
