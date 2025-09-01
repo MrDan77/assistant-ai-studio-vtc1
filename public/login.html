@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesso Riservato - Consulente SCV</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #1c1e21;
+            margin-bottom: 20px;
+        }
+        .disclaimer {
+            text-align: left;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #606770;
+            line-height: 1.5;
+        }
+        .disclaimer h2 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+        }
+         .disclaimer h4 {
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #1c1e21;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .acceptance {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #error-message {
+            color: #d93025;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Accesso Riservato</h1>
+        
+        <div class="disclaimer">
+            <h2>Avvertenze d'Uso e Limitazione di Responsabilità</h2>
+            
+            <h4>Scopo dello Strumento</h4>
+            <p>"Consulente SCV" è uno strumento di supporto decisionale basato su intelligenza artificiale, progettato per assistere i professionisti in ambito legale.</p>
+            
+            <h4>Natura Informativa e Non Vincolante</h4>
+            <p>Le informazioni, le analisi e gli output generati da questa applicazione sono forniti a solo scopo informativo e preliminare. <strong>Essi non costituiscono in alcun modo un parere legale, finanziario, contabile o professionale.</strong> L'utilizzo di questa applicazione non instaura un rapporto di tipo professionale-cliente.</p>
+
+            <h4>Non Sostituisce il Parere di un Esperto</h4>
+            <p>L'applicazione non sostituisce il giudizio, la competenza e la verifica di un professionista qualificato e legalmente abilitato. Qualsiasi decisione che possa avere implicazioni legali o finanziarie deve essere presa solo dopo aver consultato un esperto umano riconosciuto.</p>
+
+            <h4>Accuratezza delle Informazioni</h4>
+            <p>Sebbene sia stato fatto ogni sforzo per garantire l'accuratezza delle informazioni, non viene offerta alcuna garanzia, esplicita o implicita, sulla completezza o affidabilità degli output generati. L'intelligenza artificiale può commettere errori. <strong>L'utente è l'unico responsabile della verifica e della validazione di tutte le informazioni prima del loro utilizzo.</strong></p>
+
+            <h4>Limitazione di Responsabilità</h4>
+            <p>In nessun caso lo sviluppatore o il fornitore dell'applicazione potranno essere ritenuti responsabili per qualsiasi danno derivante dall'uso o dall'impossibilità di usare le informazioni fornite da questo strumento.</p>
+        </div>
+
+        <form id="login-form">
+            <div class="form-group acceptance">
+                <input type="checkbox" id="accept-checkbox">
+                <label for="accept-checkbox">Dichiaro di aver letto, compreso e accettato le Avvertenze d'Uso.</label>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password-input" placeholder="Inserisci la password di accesso" required>
+            </div>
+            <button type="submit">Accedi</button>
+            <p id="error-message"></p>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Impedisce al modulo di ricaricare la pagina
+
+            const password = document.getElementById('password-input').value;
+            const isAccepted = document.getElementById('accept-checkbox').checked;
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'none'; // Nasconde il messaggio di errore precedente
+
+            if (!isAccepted) {
+                errorMessage.textContent = 'È necessario accettare le condizioni per procedere.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                // Chiama la nostra funzione serverless sicura
+                const response = await fetch('/.netlify/functions/check-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password })
+                });
+
+                if (response.ok) { // Status 200 (Success)
+                    // Successo! Reindirizza alla pagina dell'applicazione
+                    window.location.href = "/index.html";
+                } else { // Status 401 (Unauthorized) o altri errori
+                    errorMessage.textContent = 'Password non valida.';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                // Errore di rete o di comunicazione
+                errorMessage.textContent = 'Errore di comunicazione con il server. Riprova più tardi.';
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>
