@@ -918,20 +918,22 @@ const App: FC = () => {
         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@4.4.168/build/pdf.worker.mjs`;
 
         const initializeApp = async () => {
-            if (!process.env.API_KEY) {
-                setChatHistory([{ id: 'system-error-apikey', sender: 'system', text: "Benvenuto! Per attivare l'assistente, è necessaria una chiave API di Google Gemini. Sembra che non sia configurata." }]);
-                setIsAiInitialized(false);
-                return;
-            }
-    
-            try {
-                aiRef.current = new GoogleGenAI({ apiKey: process.env.API_KEY });
-                setIsAiInitialized(true);
-            } catch (error) {
-                console.error("Errore durante l'inizializzazione di Gemini:", error);
-                setChatHistory([{ id: 'system-error-gemini', sender: 'system', text: "Impossibile inizializzare l'assistente AI. Controlla che la chiave API sia corretta e ricarica la pagina." }]);
-                setIsAiInitialized(false);
-            }
+            const apiKey = import.meta.env.VITE_API_KEY;
+
+if (!apiKey) {
+    setChatHistory([{ id: 'system-error-apikey', sender: 'system', text: "Benvenuto! La chiave API di Google Gemini non è stata trovata. Assicurati che sia configurata correttamente nelle variabili d'ambiente di Netlify con il nome VITE_API_KEY." }]);
+    setIsAiInitialized(false);
+    return;
+}
+
+try {
+    aiRef.current = new GoogleGenAI({ apiKey: apiKey });
+    setIsAiInitialized(true);
+} catch (error) {
+    console.error("Errore durante l'inizializzazione di Gemini:", error);
+    setChatHistory([{ id: 'system-error-gemini', sender: 'system', text: "Impossibile inizializzare l'assistente AI. La chiave API potrebbe non essere valida. Controlla la Google Cloud Console e ricarica la pagina." }]);
+    setIsAiInitialized(false);
+}
         };
 
         initializeApp();
