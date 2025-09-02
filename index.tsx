@@ -977,7 +977,7 @@ try {
 }
         }
 
-        initializeApp();
+        
         
         return () => {
             if (window.speechSynthesis.speaking) {
