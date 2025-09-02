@@ -774,103 +774,26 @@ const PdfSlideView: FC<{ slide: Slide }> = ({ slide }) => {
 };
 
 // --- Main App Component ---
-// --- NUOVO E SICURO AppContainer ---
 const AppContainer: FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [password, setPassword] = useState('');
-    const [isAccepted, setIsAccepted] = useState(false);
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const passwordInputRef = useRef<HTMLInputElement>(null);
+    // ...
+    // This password is intentionally visible in the client-side code.
+    // This is NOT for security, but for simple gatekeeping.
+    const CORRECT_PASSWORD = "SCV2024!"; // <-- PASSWORD INSICURA
 
-    useEffect(() => {
-        passwordInputRef.current?.focus();
-    }, []);
+    // ...
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-
-        if (!isAccepted) {
-            setError('È necessario accettare le condizioni per procedere.');
-            return;
-        }
-
-        setIsLoading(true);
-
-        try {
-            const response = await fetch('/.netlify/functions/check-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: password })
-            });
-
-            if (response.ok) {
-                setIsAuthenticated(true);
-            } else {
-                setError('Password non valida.');
-                setPassword(''); // Resetta il campo password
-                passwordInputRef.current?.focus(); // Rimette il focus sull'input
-            }
-        } catch (err) {
-            setError('Errore di comunicazione con il server. Riprova.');
-        } finally {
-            setIsLoading(false);
+        if (password === CORRECT_PASSWORD) { // <-- CONTROLLO INSICURO
+            setIsAuthenticated(true);
+            setError('');
+        } else {
+            setError('Password non corretta. Riprova.');
+            setPassword('');
         }
     };
 
-    if (!isAuthenticated) {
-        return (
-            <div className="lock-screen-container">
-                <div className="lock-screen-box" style={{maxWidth: '700px'}}>
-                    <h1>Accesso Riservato</h1>
-                    
-                    <div className="disclaimer" style={{textAlign: 'left', border: '1px solid #ddd', padding: '15px', borderRadius: '8px', maxHeight: '150px', overflowY: 'auto', marginBottom: '20px', fontSize: '12px', color: '#606770', lineHeight: '1.5'}}>
-                        <h2 style={{marginTop: '0', fontSize: '16px', color: '#333'}}>Avvertenze d'Uso e Limitazione di Responsabilità</h2>
-                        <h4 style={{marginTop: '15px', marginBottom: '5px', fontSize: '14px', color: '#1c1e21'}}>Scopo dello Strumento</h4>
-                        <p>"Consulente SCV" è uno strumento di supporto decisionale basato su intelligenza artificiale, progettato per assistere i professionisti in ambito legale e contabile.</p>
-                        <h4 style={{marginTop: '15px', marginBottom: '5px', fontSize: '14px', color: '#1c1e21'}}>Natura Informativa e Non Vincolante</h4>
-                        <p>Le informazioni, le analisi e gli output generati da questa applicazione sono forniti a solo scopo informativo e preliminare. <strong>Essi non costituiscono in alcun modo un parere legale, finanziario, contabile o professionale.</strong></p>
-                        <h4 style={{marginTop: '15px', marginBottom: '5px', fontSize: '14px', color: '#1c1e21'}}>Non Sostituisce il Parere di un Esperto</h4>
-                        <p>L'applicazione non sostituisce il giudizio, la competenza e la verifica di un professionista qualificato e legalmente abilitato.</p>
-                        <h4 style={{marginTop: '15px', marginBottom: '5px', fontSize: '14px', color: '#1c1e21'}}>Accuratezza delle Informazioni</h4>
-                        <p>L'intelligenza artificiale può commettere errori. <strong>L'utente è l'unico responsabile della verifica e della validazione di tutte le informazioni prima del loro utilizzo.</strong></p>
-                        <h4 style={{marginTop: '15px', marginBottom: '5px', fontSize: '14px', color: '#1c1e21'}}>Limitazione di Responsabilità</h4>
-                        <p>In nessun caso lo sviluppatore o il fornitore dell'applicazione potranno essere ritenuti responsabili per qualsiasi danno derivante dall'uso di questo strumento.</p>
-                    </div>
-
-                    <form onSubmit={handleLogin}>
-                        <div className="acceptance" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', fontSize: '14px'}}>
-                            <input 
-                                type="checkbox" 
-                                id="accept-checkbox" 
-                                checked={isAccepted}
-                                onChange={(e) => setIsAccepted(e.target.checked)}
-                                style={{marginRight: '10px'}}
-                            />
-                            <label htmlFor="accept-checkbox">Dichiaro di aver letto, compreso e accettato le Avvertenze d'Uso.</label>
-                        </div>
-                        <input
-                            ref={passwordInputRef}
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Inserisci la password di accesso"
-                            aria-label="Password"
-                            disabled={isLoading}
-                        />
-                        <button type="submit" disabled={isLoading}>
-                            {isLoading ? 'Verifica in corso...' : 'Accedi'}
-                        </button>
-                    </form>
-                    {error && <p className="lock-screen-error">{error}</p>}
-                </div>
-            </div>
-        );
-    }
-
-    return <App />;
-};
 
 const App: FC = () => {
     const [status, setStatus] = useState<AppStatus>('idle');
