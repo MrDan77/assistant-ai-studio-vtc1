@@ -975,7 +975,7 @@ try {
     setChatHistory([{ id: 'system-error-gemini', sender: 'system', text: "Impossibile inizializzare l'assistente AI. La chiave API potrebbe non essere valida. Controlla la Google Cloud Console e ricarica la pagina." }]);
     setIsAiInitialized(false);
 }
-        };
+        }
 
         initializeApp();
         
